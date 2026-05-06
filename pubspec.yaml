@@ -1,0 +1,61 @@
+name: malina
+description: "A new Flutter project."
+
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  go_router: ^14.8.1
+  flutter_bloc: ^9.1.0
+  get_it: ^8.0.3
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+  shared_preferences: ^2.3.4
+  mobile_scanner: ^6.0.5
+  flutter_native_splash: ^2.4.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+  build_runner: ^2.4.13
+  freezed: ^2.5.7
+  json_serializable: ^6.9.4
+  flutter_launcher_icons: ^0.14.4
+
+
+flutter:
+
+
+  uses-material-design: true
+
+
+  assets:
+    - assets/foodBanner.png
+    - assets/buatyBanner.png
+    - assets/shampoo.png
+    - assets/pizza.png
+    - assets/Icon.png
+    - assets/splash_screen.png
+    - assets/Frame.png
+  
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/Icon.png"
+
+flutter_native_splash:
+  color: "F72055"
+  image: assets/splash_screen.png
+  ios: true
+  android: true

@@ -1,0 +1,46 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'core/di/injection.dart';
+import 'core/router/app_router.dart';
+import 'features/auth/bloc/auth_bloc.dart';
+import 'features/auth/bloc/auth_event.dart';
+import 'features/cart/bloc/cart_bloc.dart';
+import 'features/cart/data/cart_repository.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await setupDependencies();
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<CartRepository>.value(
+          value: locator<CartRepository>(),
+        ),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthBloc>(
+            create: (_) => locator<AuthBloc>()..add(const AuthStatusChecked()),
+          ),
+          BlocProvider<CartBloc>(create: (_) => locator<CartBloc>()),
+        ],
+        child: MaterialApp.router(
+          title: 'Malina',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          ),
+          routerConfig: appRouter,
+        ),
+      ),
+    );
+  }
+}
