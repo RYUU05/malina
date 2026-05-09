@@ -5,8 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_event.dart';
 import '../bloc/cart_state.dart';
-import '../data/cart_repository.dart';
-import '../data/models/cart_item.dart';
+import '../domain/entities/cart_item.dart';
 
 class CartPage extends StatefulWidget {
   final String? categoryFilter;
@@ -132,9 +131,7 @@ class _CartPageState extends State<CartPage> {
           TextButton(
             onPressed: () {
               Navigator.of(dialogContext).pop();
-              final username = cartBloc.state.username;
-              context.read<CartRepository>().clearCart(username);
-              cartBloc.add(CartLoaded(username));
+              cartBloc.add(const CartCleared());
             },
             child: const Text('Удалить', style: TextStyle(color: _accentColor)),
           ),

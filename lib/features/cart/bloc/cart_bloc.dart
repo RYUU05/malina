@@ -1,25 +1,29 @@
 import 'dart:async';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_state.dart';
-import '../data/cart_repository.dart';
-import '../data/models/cart_item.dart';
+import '../domain/entities/cart_item.dart';
+import '../domain/usecases/cart_usecases.dart';
 import 'cart_event.dart';
 import 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  final CartRepository _cartRepository;
+  final LoadCartUseCase _loadCartUseCase;
+  final SaveCartUseCase _saveCartUseCase;
   final AuthBloc _authBloc;
   Timer? _debounceTimer;
   late final StreamSubscription<AuthState> _authSub;
 
-  CartBloc(this._cartRepository, this._authBloc) : super(const CartState()) {
+  CartBloc(
+    this._loadCartUseCase,
+    this._saveCartUseCase,
+    this._authBloc,
+  ) : super(const CartState()) {
     on<CartLoaded>(_onLoaded);
     on<CartItemAdded>(_onItemAdded);
     on<CartItemRemoved>(_onItemRemoved);
     on<CartItemQuantityChanged>(_onQuantityChanged);
+    on<CartCleared>(_onCleared);
 
     _authSub = _authBloc.stream.listen((authState) {
       if (authState.status == AuthStatus.authenticated &&
@@ -34,7 +38,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       }
     });
 
-    // Load cart if already authenticated at creation time
     if (_authBloc.state.status == AuthStatus.authenticated &&
         _authBloc.state.username != null) {
       add(CartLoaded(_authBloc.state.username!));
@@ -42,7 +45,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   }
 
   Future<void> _onLoaded(CartLoaded event, Emitter<CartState> emit) async {
-    final items = await _cartRepository.loadCart(event.username);
+    final items = await _loadCartUseCase(event.username);
     emit(state.copyWith(items: items, username: event.username));
   }
 
@@ -84,22 +87,25 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     _debounceSave(updated);
   }
 
+  Future<void> _onCleared(CartCleared event, Emitter<CartState> emit) async {
+    emit(state.copyWith(items: []));
+    _debounceSave([]);
+  }
+
   void _debounceSave(List<CartItem> items) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      _cartRepository.saveCart(state.username, items);
+      _saveCartUseCase(state.username, items);
     });
   }
 
-  /// Immediately save any pending debounced changes.
   Future<void> flushSave() async {
     if (_debounceTimer != null && _debounceTimer!.isActive) {
       _debounceTimer!.cancel();
-      await _cartRepository.saveCart(state.username, state.items);
+      await _saveCartUseCase(state.username, state.items);
     }
   }
 
-  /// Cancel any pending debounced save without saving.
   void cancelPendingSave() {
     _debounceTimer?.cancel();
   }
