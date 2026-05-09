@@ -25,14 +25,14 @@ class CustomBottomNavBar extends StatelessWidget {
   final EdgeInsets padding;
 
   const CustomBottomNavBar({
-    Key? key,
+    super.key,
     required this.items,
     this.onCenterButtonPressed,
     this.activeColor = const Color(0xFFF62C5B),
     this.inactiveColor = const Color(0xFF999999),
     this.backgroundColor = Colors.white,
     this.padding = const EdgeInsets.symmetric(horizontal: 12),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +78,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   color: activeColor,
                   boxShadow: [
                     BoxShadow(
-                      color: activeColor.withOpacity(0.4),
+                      color: activeColor.withValues(alpha: 0.4),
                       blurRadius: 12,
                       spreadRadius: 2,
                     ),
@@ -143,11 +143,11 @@ class MalinaBottomNavBar extends StatelessWidget {
   final VoidCallback? onCenterPressed;
 
   const MalinaBottomNavBar({
-    Key? key,
+    super.key,
     required this.selectedIndex,
     required this.onItemTapped,
     this.onCenterPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

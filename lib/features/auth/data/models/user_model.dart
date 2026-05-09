@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../../../cart/data/models/cart_item.dart';
+import '../../../cart/domain/entities/cart_item.dart';
 
 part 'user_model.freezed.dart';
 part 'user_model.g.dart';

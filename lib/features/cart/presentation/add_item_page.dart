@@ -5,7 +5,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_event.dart';
-import '../data/models/cart_item.dart';
+import '../domain/entities/cart_item.dart';
 
 class AddItemPage extends StatefulWidget {
   const AddItemPage({super.key});

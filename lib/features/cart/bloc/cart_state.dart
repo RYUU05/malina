@@ -1,4 +1,4 @@
-import '../data/models/cart_item.dart';
+import '../domain/entities/cart_item.dart';
 
 class CartState {
   final List<CartItem> items;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:malina/features/cart/data/models/cart_item.dart';
+import 'package:malina/features/cart/domain/entities/cart_item.dart';
 
 import '../auth/bloc/auth_bloc.dart';
 import '../auth/bloc/auth_state.dart';

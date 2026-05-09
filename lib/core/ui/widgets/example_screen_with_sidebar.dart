@@ -4,7 +4,7 @@ import 'custom_bottom_nav_bar.dart';
 
 /// Пример экрана с боковой панелью категорий и нижним TabBar
 class ExampleScreenWithSidebar extends StatefulWidget {
-  const ExampleScreenWithSidebar({Key? key}) : super(key: key);
+  const ExampleScreenWithSidebar({super.key});
 
   @override
   State<ExampleScreenWithSidebar> createState() =>
@@ -45,6 +45,20 @@ class _ExampleScreenWithSidebarState extends State<ExampleScreenWithSidebar> {
           },
         ),
       ],
+      bottomNavigationBar: MalinaBottomNavBar(
+        selectedIndex: _selectedBottomIndex,
+        onItemTapped: (index) {
+          setState(() => _selectedBottomIndex = index);
+          // Навигация по страницам
+          _handleBottomNavigation(index);
+        },
+        onCenterPressed: () {
+          // Обработка нажатия на центральную кнопку
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Центральная кнопка нажата')),
+          );
+        },
+      ),
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -73,20 +87,6 @@ class _ExampleScreenWithSidebarState extends State<ExampleScreenWithSidebar> {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: MalinaBottomNavBar(
-        selectedIndex: _selectedBottomIndex,
-        onItemTapped: (index) {
-          setState(() => _selectedBottomIndex = index);
-          // Навигация по страницам
-          _handleBottomNavigation(index);
-        },
-        onCenterPressed: () {
-          // Обработка нажатия на центральную кнопку
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Центральная кнопка нажата')),
-          );
-        },
       ),
     );
   }
