@@ -6,6 +6,7 @@ import 'core/router/app_router.dart';
 import 'features/auth/bloc/auth_bloc.dart';
 import 'features/auth/bloc/auth_event.dart';
 import 'features/cart/bloc/cart_bloc.dart';
+import 'features/cart/data/cart_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,20 +19,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
+    return MultiRepositoryProvider(
       providers: [
-        BlocProvider<AuthBloc>(
-          create: (_) => locator<AuthBloc>()..add(const AuthStatusChecked()),
+        RepositoryProvider<CartRepository>.value(
+          value: locator<CartRepository>(),
         ),
-        BlocProvider<CartBloc>(create: (_) => locator<CartBloc>()),
       ],
-      child: MaterialApp.router(
-        title: 'Malina',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthBloc>(
+            create: (_) => locator<AuthBloc>()..add(const AuthStatusChecked()),
+          ),
+          BlocProvider<CartBloc>(create: (_) => locator<CartBloc>()),
+        ],
+        child: MaterialApp.router(
+          title: 'Malina',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          ),
+          routerConfig: appRouter,
         ),
-        routerConfig: appRouter,
       ),
     );
   }

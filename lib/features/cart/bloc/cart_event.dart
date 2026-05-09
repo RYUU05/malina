@@ -1,4 +1,4 @@
-import '../domain/entities/cart_item.dart';
+import '../data/models/cart_item.dart';
 
 abstract class CartEvent {
   const CartEvent();
@@ -23,8 +23,4 @@ final class CartItemQuantityChanged extends CartEvent {
   final String itemId;
   final int delta;
   const CartItemQuantityChanged({required this.itemId, required this.delta});
-}
-
-final class CartCleared extends CartEvent {
-  const CartCleared();
 }

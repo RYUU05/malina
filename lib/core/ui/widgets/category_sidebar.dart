@@ -26,10 +26,10 @@ class CategorySidebar extends StatelessWidget {
   final EdgeInsets padding;
 
   const CategorySidebar({
-    super.key,
+    Key? key,
     required this.categories,
     this.padding = const EdgeInsets.only(top: 20, right: 12),
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -144,13 +144,13 @@ class ScaffoldWithCategorySidebar extends StatelessWidget {
   final EdgeInsets sidebarPadding;
 
   const ScaffoldWithCategorySidebar({
-    super.key,
+    Key? key,
     required this.child,
     required this.categories,
     this.appBar,
     this.bottomNavigationBar,
     this.sidebarPadding = const EdgeInsets.only(top: 20, right: 12),
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

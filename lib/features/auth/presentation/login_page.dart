@@ -111,20 +111,12 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 24),
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
-                        String? errorMessage;
-                        if (state.failure == AuthFailure.wrongPassword) {
-                          errorMessage = 'Неверный пароль. Попыток осталось: ${3 - state.failedAttempts}';
-                        } else if (state.failure == AuthFailure.lockedOut) {
-                          errorMessage = 'Аккаунт заблокирован. Пользователь удалён.';
-                        } else if (state.failure == AuthFailure.emptyFields) {
-                          errorMessage = 'Заполните все поля';
-                        }
-
-                        if (errorMessage != null) {
+                        if (state.errorMessage != null &&
+                            state.errorMessage!.isNotEmpty) {
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 16),
                             child: Text(
-                              errorMessage,
+                              state.errorMessage!,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.error,
                               ),

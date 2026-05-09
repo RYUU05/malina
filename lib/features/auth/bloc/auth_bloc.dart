@@ -1,24 +1,13 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../domain/entities/auth_result.dart';
-import '../domain/usecases/auth_usecases.dart';
+import '../data/auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final LoginUseCase _loginUseCase;
-  final LogoutUseCase _logoutUseCase;
-  final CheckAuthStatusUseCase _checkAuthStatusUseCase;
-  final DeleteUserUseCase _deleteUserUseCase;
-  final GetFailedAttemptsUseCase _getFailedAttemptsUseCase;
+  final AuthRepository _authRepository;
 
-  AuthBloc(
-    this._loginUseCase,
-    this._logoutUseCase,
-    this._checkAuthStatusUseCase,
-    this._deleteUserUseCase,
-    this._getFailedAttemptsUseCase,
-  ) : super(const AuthState()) {
+  AuthBloc(this._authRepository) : super(const AuthState()) {
     on<AuthStatusChecked>(_onStatusChecked);
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
@@ -29,7 +18,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthStatusChecked event,
     Emitter<AuthState> emit,
   ) async {
-    final currentUser = await _checkAuthStatusUseCase();
+    final currentUser = await _authRepository.getCurrentUser();
     if (currentUser != null) {
       emit(
         state.copyWith(status: AuthStatus.authenticated, username: currentUser),
@@ -43,7 +32,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLoginRequested event,
     Emitter<AuthState> emit,
   ) async {
-    final result = await _loginUseCase(event.username, event.password);
+    final result = await _authRepository.login(event.username, event.password);
 
     switch (result) {
       case AuthResult.success:
@@ -51,16 +40,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           state.copyWith(
             status: AuthStatus.authenticated,
             username: event.username,
-            failure: AuthFailure.none,
+            errorMessage: '',
             failedAttempts: 0,
           ),
         );
       case AuthResult.wrongPassword:
-        final attempts = await _getFailedAttemptsUseCase(event.username);
+        final attempts = await _authRepository.getFailedAttempts(
+          event.username,
+        );
         emit(
           state.copyWith(
             status: AuthStatus.unauthenticated,
-            failure: AuthFailure.wrongPassword,
+            errorMessage: 'Неверный пароль. Попыток осталось: ${3 - attempts}',
             failedAttempts: attempts,
           ),
         );
@@ -68,7 +59,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             status: AuthStatus.lockedOut,
-            failure: AuthFailure.lockedOut,
+            errorMessage: 'Аккаунт заблокирован. Пользователь удалён.',
             failedAttempts: 3,
           ),
         );
@@ -76,7 +67,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(
           state.copyWith(
             status: AuthStatus.unauthenticated,
-            failure: AuthFailure.emptyFields,
+            errorMessage: 'Заполните все поля',
           ),
         );
     }
@@ -86,7 +77,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    await _logoutUseCase();
+    await _authRepository.logout();
     emit(const AuthState(status: AuthStatus.unauthenticated));
   }
 
@@ -94,11 +85,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthUserDeleted event,
     Emitter<AuthState> emit,
   ) async {
-    final currentUser = await _checkAuthStatusUseCase();
+    final currentUser = await _authRepository.getCurrentUser();
     if (currentUser != null) {
-      await _deleteUserUseCase(currentUser);
+      await _authRepository.deleteUser(currentUser);
     }
-    await _logoutUseCase();
+    await _authRepository.logout();
     emit(const AuthState(status: AuthStatus.unauthenticated));
   }
 }
