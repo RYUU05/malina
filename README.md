@@ -1,218 +1,100 @@
-# Malina Flutter
+# 🍓 Malina App
 
-Локальное Flutter-приложение для тестового задания "Малина". Приложение реализует авторизацию пользователей, корзину товаров, добавление товаров вручную или через QR-код, хранение данных между сессиями и UI по макетам.
+![Flutter](https://img.shields.io/badge/Flutter-02569B?style=for-the-badge&logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-0175C2?style=for-the-badge&logo=dart&logoColor=white)
+![Clean Architecture](https://img.shields.io/badge/Architecture-Clean-brightgreen?style=for-the-badge)
+![BLoC](https://img.shields.io/badge/State_Management-BLoC-blue?style=for-the-badge)
 
-## Стек
+A robust, feature-rich Flutter application demonstrating **Clean Architecture**, solid state management, and modern UI practices. Built as a comprehensive technical assignment.
 
-- Flutter / Dart
-- `go_router` для навигации
-- `flutter_bloc` для управления состоянием
-- `get_it` для dependency injection
-- `shared_preferences` для локального хранения
-- `freezed` и `json_serializable` для моделей данных
-- `mobile_scanner` для сканирования QR-кодов
+## ✨ Key Features
 
-## Архитектура
+- **🔐 Local Authentication**: Secure login system with brute-force protection (accounts lock and delete after 3 failed attempts).
+- **🛒 Smart Cart System**: Persistent shopping cart with category filtering (Food, Beauty), quantity management, and subtotal calculation.
+- **📷 QR Code Scanner**: Integrated QR scanning capability for quick item additions, supporting complex data formats.
+- **🎨 Custom UI/UX**: Includes a custom bottom navigation bar, animated category popups, and handcrafted custom painters.
+- **📱 Responsive Design**: Fully responsive layout adapting to various screen sizes using safe areas and flexible constraints.
 
-Проект разделен по feature-first подходу:
+## 🛠 Tech Stack
 
-- `lib/core/router` — настройка маршрутов приложения через `GoRouter`.
-- `lib/core/di` — регистрация зависимостей через `get_it`.
-- `lib/features/auth` — авторизация, состояние входа, локальные данные пользователей.
-- `lib/features/cart` — корзина, модель товара, репозиторий корзины, BLoC и UI.
-- `lib/features/home` — главный экран и вход в QR-сканер.
-- `lib/features/profile` — профиль пользователя и выход.
-- `lib/features/shell` — общий shell с нижней навигацией.
-- `lib/features/qr` — общий экран QR-сканера.
+- **Framework**: [Flutter](https://flutter.dev/) & [Dart](https://dart.dev/)
+- **State Management**: [`flutter_bloc`](https://pub.dev/packages/flutter_bloc)
+- **Routing**: [`go_router`](https://pub.dev/packages/go_router) (with `ShellRoute`)
+- **Dependency Injection**: [`get_it`](https://pub.dev/packages/get_it)
+- **Local Storage**: [`shared_preferences`](https://pub.dev/packages/shared_preferences)
+- **Code Generation**: [`freezed`](https://pub.dev/packages/freezed) & [`json_serializable`](https://pub.dev/packages/json_serializable)
+- **Hardware Integration**: [`mobile_scanner`](https://pub.dev/packages/mobile_scanner)
 
-Основной поток данных:
+## 🏗 Architecture (Clean Architecture)
 
-1. UI отправляет событие в BLoC.
-2. BLoC обрабатывает событие и обновляет состояние.
-3. Репозиторий сохраняет или читает данные из `SharedPreferences`.
-4. UI подписан на состояние через `BlocBuilder` / `BlocListener` и перестраивается.
-
-## Навигация
-
-Навигация построена на `go_router`.
-
-- `/login` — экран авторизации.
-- `/feed` — главная страница.
-- `/favorites` — избранное.
-- `/profile` — профиль.
-- `/cart` — корзина.
-- `/cart?category=food` — корзина с выбранной категорией "Еда".
-- `/cart?category=beauty` — корзина с выбранной категорией "Бьюти".
-- `/add-item` — ручное добавление товара.
-
-Для основных экранов используется `ShellRoute`, внутри которого расположен `MainShell` с нижней навигацией. Это позволяет сохранять общий bottom navigation bar для авторизованной части приложения.
-
-## Авторизация
-
-Авторизация реализована локально через `AuthBloc` и `AuthRepository`.
-
-Логика:
-
-- При первом входе с валидными данными пользователь создается локально.
-- При повторном входе проверяется пароль.
-- После 3 неудачных попыток пользователь и его данные удаляются.
-- Счетчик попыток хранится отдельно для каждого пользователя.
-- Текущий пользователь сохраняется в `SharedPreferences`.
-
-Данные пользователя изолированы по ключам формата:
+The project adheres to **Clean Architecture** principles and is structured using a **Feature-First** approach to ensure scalability and separation of concerns:
 
 ```text
-user_<username>_password
-user_<username>_attempts
-user_<username>_cart
-user_<username>_settings
+lib/
+├── core/               # App-wide configurations (Router, DI, UI components)
+└── features/
+    ├── auth/           # Authentication feature (Domain, Data, Presentation)
+    ├── cart/           # Cart management feature (Domain, Data, Presentation)
+    ├── home/           # Main feed and dashboard
+    ├── profile/        # User profile
+    ├── qr/             # Universal QR scanner implementation
+    └── shell/          # Global navigation shell
 ```
 
-## Корзина
+### Data Flow Pattern
+1. **UI Layer** dispatches events to the **BLoC**.
+2. **BLoC** delegates business logic to **UseCases** (Domain layer).
+3. **UseCases** interact with **Repositories** via abstract interfaces.
+4. **Repositories** (Data layer) handle data mapping and interact with local storage.
+5. **UI Layer** listens to state changes and rebuilds reactively.
 
-Корзина реализована через `CartBloc`, `CartRepository` и модель `CartItem`.
+## 🚀 Getting Started
 
-`CartItem` содержит:
+### Prerequisites
+- Flutter SDK (latest stable)
+- Dart SDK
 
-- `id`
-- `name`
-- `category`
-- `quantity`
-- `subcategory`
-- `price`
-- `description`
-- `qrData`
-- `qrFormat`
+### Installation
 
-Экран корзины поддерживает:
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/RYUU05/malina.git
+   cd malina
+   ```
 
-- переключение категорий "Еда" / "Бьюти";
-- отображение товаров группами по подкатегории;
-- изменение количества через `+` / `-`;
-- удаление товара;
-- очистку корзины;
-- подсчет итоговой суммы по группе;
-- открытие нужной категории через query parameter.
+2. **Install dependencies**
+   ```bash
+   flutter pub get
+   ```
 
-Изменение количества визуально применяется сразу в BLoC, а сохранение в `SharedPreferences` выполняется с небольшой задержкой через debounce. Это дает быстрый отклик интерфейса и уменьшает количество операций записи при частых нажатиях.
+3. **Generate models & DI** (Required for Freezed/JSON Serializable)
+   ```bash
+   dart run build_runner build --delete-conflicting-outputs
+   ```
 
-## Хранение данных
+4. **Run the application**
+   ```bash
+   flutter run
+   ```
 
-Корзина сохраняется локально в JSON-формате.
+## 🧪 Testing & Validation
 
-`CartRepository`:
-
-- читает строку JSON из `SharedPreferences`;
-- декодирует ее через `jsonDecode`;
-- преобразует элементы в `CartItem.fromJson`;
-- сохраняет список через `toJson` и `jsonEncode`.
-
-Модели данных построены через `freezed` и `json_serializable`, поэтому сериализация, `copyWith`, equality и immutable-модель генерируются автоматически.
-
-После изменения модели нужно запускать:
+To ensure code quality and architecture compliance, run the following checks:
 
 ```bash
-dart run build_runner build --delete-conflicting-outputs
-```
-
-## Dependency Injection
-
-DI реализован в `lib/core/di/injection.dart` через `get_it`.
-
-Регистрируются:
-
-- `AuthRepository`
-- `CartRepository`
-- `AuthBloc`
-- `CartBloc`
-
-`setupDependencies()` вызывается перед запуском приложения в `main.dart`, после чего зависимости используются через `locator<T>()`.
-
-## QR-сканер
-
-QR-сканер вынесен в общий экран:
-
-```text
-lib/features/qr/presentation/qr_scanner_page.dart
-```
-
-Он используется:
-
-- центральной QR-кнопкой в нижней навигации;
-- QR-блоком на главной странице;
-- экраном ручного добавления товара.
-
-Сканер использует `mobile_scanner` и принимает только QR-коды. Поверх камеры отрисован затемненный слой с прозрачной областью внутри рамки. Рамка сделана через `CustomPainter`: рисуются четыре белых угла, а фон вне рамки затемняется.
-
-Поддерживаемые QR-форматы по заданию:
-
-- `food...` — категория "Еда";
-- `beauty...` — категория "Бьюти";
-- расширенный формат через `/`, например `beauty/Hair/Shampoo/1900/Описание`.
-
-## CustomPainter
-
-В проекте используется `CustomPainter`:
-
-- на экране QR-сканера для затемнения области вне рамки и рисования углов рамки;
-- на экране добавления товара для декоративного нижнего объекта;
-- в `MalinaPainter` как отдельный пример розового объекта.
-
-Для задания важно, что форма не обязана полностью совпадать с макетом, но должна демонстрировать ручную отрисовку через canvas.
-
-## Адаптивность
-
-В проекте используются:
-
-- `SafeArea` для корректного отображения на устройствах с вырезами и системными зонами;
-- `Expanded`, `Flexible`, `LayoutBuilder`, `ListView`, `CustomScrollView` для адаптации контента;
-- ограничение ширины формы авторизации на широких экранах;
-- scroll-контейнеры на экранах с большим количеством контента.
-
-Это позволяет приложению корректно работать на разных размерах экранов, включая планшеты и горизонтальную ориентацию. Основные экраны не завязаны на фиксированную высоту viewport и могут прокручиваться.
-
-## Сложные моменты реализации
-
-### 1. Сохранение корзины с debounce
-
-При нажатиях `+` / `-` состояние корзины меняется мгновенно, чтобы интерфейс не ощущался медленным. Но запись в локальное хранилище откладывается на короткий интервал. Это снижает нагрузку на `SharedPreferences`, особенно если пользователь быстро меняет количество.
-
-### 2. Изоляция данных пользователей
-
-Корзина хранится отдельно для каждого пользователя. Ключ строится на основе username, поэтому данные одного пользователя не смешиваются с данными другого.
-
-### 3. Удаление пользователя после 3 ошибок
-
-После трех неверных попыток входа удаляются пароль, счетчик попыток, корзина и настройки пользователя. Это реализовано в `AuthRepository.deleteUser`.
-
-### 4. ShellRoute и bottom navigation
-
-`ShellRoute` позволяет держать один общий `MainShell` вокруг основных экранов. Благодаря этому bottom navigation bar не нужно дублировать на каждой странице.
-
-### 5. Popup категорий корзины
-
-При нажатии на иконку "Корзина" сначала появляется анимированный popup выбора категории. Он реализован в `MainShell` через `AnimationController`, fade/slide-анимацию и затемняющий overlay. После выбора категории выполняется переход на `/cart?category=food` или `/cart?category=beauty`.
-
-### 6. QR-сканер как общий экран
-
-QR-сканер вынесен в отдельный feature-модуль, чтобы не дублировать код в `HomePage`, `MainShell` и экране добавления товара. Экран возвращает найденную строку через `Navigator.pop(code)`.
-
-### 7. Расширение модели товара
-
-Изначально корзина могла хранить только название, категорию и количество. Для дизайна корзины были добавлены `subcategory`, `price` и `description`. После этого были обновлены generated-файлы `freezed/json_serializable`, чтобы JSON-хранение продолжило работать корректно.
-
-## Проверка
-
-Основные команды:
-
-```bash
+# Analyze code for linting errors and best practices
 flutter analyze
+
+# Run unit and widget tests
 flutter test
 ```
 
-Генерация моделей:
+## 💡 Technical Highlights & Optimizations
 
-```bash
-dart run build_runner build --delete-conflicting-outputs
-```
+- **Debounced Storage Writes**: Cart changes are instantly reflected in the UI but debounced before writing to local storage, optimizing I/O performance.
+- **Data Isolation**: User data (carts, attempts, settings) is strictly isolated using unique username-based keys in `SharedPreferences`.
+- **ShellRoute Navigation**: Seamless bottom navigation state preservation across top-level screens without re-rendering the entire view tree.
+- **Custom Canvas Elements**: Utilizes `CustomPainter` for complex UI overlays, such as the QR scanner viewfinder and decorative assets, avoiding heavy image assets.
 
+---
+*Developed using modern Flutter best practices.*
