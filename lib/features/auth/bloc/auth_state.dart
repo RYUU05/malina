@@ -1,28 +1,30 @@
 enum AuthStatus { unknown, authenticated, unauthenticated, lockedOut }
 
+enum AuthFailure { none, wrongPassword, emptyFields, lockedOut }
+
 class AuthState {
   final AuthStatus status;
   final String? username;
-  final String? errorMessage;
+  final AuthFailure failure;
   final int failedAttempts;
 
   const AuthState({
     this.status = AuthStatus.unknown,
     this.username,
-    this.errorMessage,
+    this.failure = AuthFailure.none,
     this.failedAttempts = 0,
   });
 
   AuthState copyWith({
     AuthStatus? status,
     String? username,
-    String? errorMessage,
+    AuthFailure? failure,
     int? failedAttempts,
   }) {
     return AuthState(
       status: status ?? this.status,
       username: username ?? this.username,
-      errorMessage: errorMessage ?? this.errorMessage,
+      failure: failure ?? this.failure,
       failedAttempts: failedAttempts ?? this.failedAttempts,
     );
   }
