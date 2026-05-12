@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'category_sidebar.dart';
 import 'custom_bottom_nav_bar.dart';
 
-/// Пример экрана с боковой панелью категорий и нижним TabBar
 class ExampleScreenWithSidebar extends StatefulWidget {
   const ExampleScreenWithSidebar({super.key});
 
@@ -30,9 +29,7 @@ class _ExampleScreenWithSidebarState extends State<ExampleScreenWithSidebar> {
           label: 'Еда',
           icon: Icons.restaurant,
           isSelected: _selectedCategory == 'food',
-          onTap: () {
-            setState(() => _selectedCategory = 'food');
-          },
+          onTap: () => setState(() => _selectedCategory = 'food'),
         ),
         CategoryItem(
           id: 'beauty',
@@ -40,22 +37,18 @@ class _ExampleScreenWithSidebarState extends State<ExampleScreenWithSidebar> {
           icon: Icons.spa,
           count: 1,
           isSelected: _selectedCategory == 'beauty',
-          onTap: () {
-            setState(() => _selectedCategory = 'beauty');
-          },
+          onTap: () => setState(() => _selectedCategory = 'beauty'),
         ),
       ],
       bottomNavigationBar: MalinaBottomNavBar(
         selectedIndex: _selectedBottomIndex,
         onItemTapped: (index) {
           setState(() => _selectedBottomIndex = index);
-          // Навигация по страницам
-          _handleBottomNavigation(index);
+          _onNavTap(index);
         },
         onCenterPressed: () {
-          // Обработка нажатия на центральную кнопку
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Центральная кнопка нажата')),
+            const SnackBar(content: Text('QR')),
           );
         },
       ),
@@ -66,20 +59,19 @@ class _ExampleScreenWithSidebarState extends State<ExampleScreenWithSidebar> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Содержимое: ${_selectedCategory == 'food' ? 'Еда' : 'Бьюти'}',
+                _selectedCategory == 'food' ? 'Еда' : 'Бьюти',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 20),
-              // Здесь может быть любой контент
               Container(
                 height: 400,
                 color: Colors.grey.shade200,
                 child: Center(
                   child: Text(
-                    'Контент категории: ${_selectedCategory == 'food' ? 'Еда' : 'Бьюти'}',
+                    _selectedCategory,
                     style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
                 ),
@@ -91,20 +83,7 @@ class _ExampleScreenWithSidebarState extends State<ExampleScreenWithSidebar> {
     );
   }
 
-  void _handleBottomNavigation(int index) {
-    switch (index) {
-      case 0:
-        // Лента
-        break;
-      case 1:
-        // Избранное
-        break;
-      case 2:
-        // Профиль
-        break;
-      case 3:
-        // Корзина
-        break;
-    }
+  void _onNavTap(int index) {
+    // TODO: навигация
   }
 }

@@ -23,21 +23,19 @@ GoRouter _createRouter(AuthBloc authBloc) {
       ),
       ShellRoute(
         builder: (context, state, child) {
-          final location = state.matchedLocation;
-          int index = 0;
-          if (location.startsWith('/favorites')) {
-            index = 1;
-          } else if (location.startsWith('/add-item')) {
-            index = 2;
-          } else if (location.startsWith('/profile')) {
-            index = 3;
-          } else if (location.startsWith('/cart')) {
-            index = 4;
-          }
-          return MainShell(currentIndex: index, child: child);
+          final loc = state.matchedLocation;
+          int idx = 0;
+          if (loc.startsWith('/favorites')) idx = 1;
+          if (loc.startsWith('/add-item')) idx = 2;
+          if (loc.startsWith('/profile')) idx = 3;
+          if (loc.startsWith('/cart')) idx = 4;
+          return MainShell(currentIndex: idx, child: child);
         },
         routes: [
-          GoRoute(path: '/feed', builder: (context, state) => const HomePage()),
+          GoRoute(
+            path: '/feed',
+            builder: (context, state) => const HomePage(),
+          ),
           GoRoute(
             path: '/favorites',
             builder: (context, state) => const FavoritesPage(),
@@ -58,31 +56,29 @@ GoRouter _createRouter(AuthBloc authBloc) {
     ],
     redirect: (context, state) {
       final authState = authBloc.state;
-      final isLoginRoute = state.matchedLocation == '/login';
+      final onLogin = state.matchedLocation == '/login';
 
       if (authState.status == AuthStatus.authenticated) {
-        // Redirect to feed if trying to access login
-        if (isLoginRoute) return '/feed';
-        return null;
+        return onLogin ? '/feed' : null;
       }
 
       if (authState.status == AuthStatus.unauthenticated ||
           authState.status == AuthStatus.lockedOut) {
-        return isLoginRoute ? null : '/login';
+        return onLogin ? null : '/login';
       }
 
       return null;
     },
-    refreshListenable: _AuthBlocListenable(authBloc),
+    refreshListenable: _AuthListener(authBloc),
   );
 }
 
 final GoRouter appRouter = _createRouter(locator<AuthBloc>());
 
-class _AuthBlocListenable extends ChangeNotifier {
+class _AuthListener extends ChangeNotifier {
   final AuthBloc _authBloc;
 
-  _AuthBlocListenable(this._authBloc) {
+  _AuthListener(this._authBloc) {
     _authBloc.stream.listen((_) => notifyListeners());
   }
 }

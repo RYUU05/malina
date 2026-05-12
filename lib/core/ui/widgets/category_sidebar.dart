@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Модель для категории в боковой панели
 class CategoryItem {
   final String id;
   final String label;
@@ -19,8 +18,6 @@ class CategoryItem {
   });
 }
 
-/// Боковая плавающая панель категорий
-/// Расположена в правом краю экрана, не блокирует контент
 class CategorySidebar extends StatelessWidget {
   final List<CategoryItem> categories;
   final EdgeInsets padding;
@@ -55,7 +52,6 @@ class CategorySidebar extends StatelessWidget {
   }
 }
 
-/// Карточка категории для боковой панели
 class _CategoryCard extends StatelessWidget {
   final CategoryItem item;
 
@@ -90,7 +86,6 @@ class _CategoryCard extends StatelessWidget {
               ],
             ),
           ),
-          // Текст ниже карточки
           Positioned(
             top: 70,
             left: 0,
@@ -105,7 +100,6 @@ class _CategoryCard extends StatelessWidget {
               ),
             ),
           ),
-          // Бейдж счётчика
           if (item.count > 0)
             Positioned(
               top: -4,
@@ -135,7 +129,6 @@ class _CategoryCard extends StatelessWidget {
   }
 }
 
-/// Обёртка Stack для размещения контента + боковой панели
 class ScaffoldWithCategorySidebar extends StatelessWidget {
   final Widget child;
   final List<CategoryItem> categories;

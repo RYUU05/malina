@@ -1,5 +1,3 @@
-// Экспорт всех UI-компонентов для боковой панели и навигации
-
 export 'category_sidebar.dart';
 export 'custom_bottom_nav_bar.dart';
 export 'example_screen_with_sidebar.dart';

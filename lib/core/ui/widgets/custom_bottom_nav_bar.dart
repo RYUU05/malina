@@ -1,28 +1,11 @@
 import 'package:flutter/material.dart';
 
-/// Модель для элемента нижней навигации
-class BottomNavItem {
-  final String label;
-  final IconData icon;
-  final VoidCallback onTap;
-  final bool isActive;
-
-  BottomNavItem({
-    required this.label,
-    required this.icon,
-    required this.onTap,
-    this.isActive = false,
-  });
-}
-
-/// Кастомный нижний TabBar с центральной плавающей кнопкой
 class CustomBottomNavBar extends StatelessWidget {
   final List<BottomNavItem> items;
   final VoidCallback? onCenterButtonPressed;
   final Color activeColor;
   final Color inactiveColor;
   final Color backgroundColor;
-  final EdgeInsets padding;
 
   const CustomBottomNavBar({
     super.key,
@@ -31,7 +14,6 @@ class CustomBottomNavBar extends StatelessWidget {
     this.activeColor = const Color(0xFFF62C5B),
     this.inactiveColor = const Color(0xFF999999),
     this.backgroundColor = Colors.white,
-    this.padding = const EdgeInsets.symmetric(horizontal: 12),
   });
 
   @override
@@ -49,25 +31,22 @@ class CustomBottomNavBar extends StatelessWidget {
       ),
       child: Padding(
         padding: EdgeInsets.only(
-          left: padding.left,
-          right: padding.right,
+          left: 12,
+          right: 12,
           top: 12,
           bottom: 12 + MediaQuery.of(context).padding.bottom,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            // Лента (слева)
             _NavBarItem(
               item: items[0],
               color: items[0].isActive ? activeColor : inactiveColor,
             ),
-            // Избранное (слева-центр)
             _NavBarItem(
               item: items[1],
               color: items[1].isActive ? activeColor : inactiveColor,
             ),
-            // Центральная плавающая кнопка
             GestureDetector(
               onTap: onCenterButtonPressed,
               child: Container(
@@ -87,12 +66,10 @@ class CustomBottomNavBar extends StatelessWidget {
                 child: const Icon(Icons.apps, color: Colors.white, size: 24),
               ),
             ),
-            // Профиль (справа-центр)
             _NavBarItem(
               item: items[2],
               color: items[2].isActive ? activeColor : inactiveColor,
             ),
-            // Корзина (справа)
             _NavBarItem(
               item: items[3],
               color: items[3].isActive ? activeColor : inactiveColor,
@@ -104,7 +81,20 @@ class CustomBottomNavBar extends StatelessWidget {
   }
 }
 
-/// Отдельный элемент навигации
+class BottomNavItem {
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+  final bool isActive;
+
+  BottomNavItem({
+    required this.label,
+    required this.icon,
+    required this.onTap,
+    this.isActive = false,
+  });
+}
+
 class _NavBarItem extends StatelessWidget {
   final BottomNavItem item;
   final Color color;
@@ -136,7 +126,6 @@ class _NavBarItem extends StatelessWidget {
   }
 }
 
-/// Упрощённый вариант с готовыми пунктами
 class MalinaBottomNavBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onItemTapped;

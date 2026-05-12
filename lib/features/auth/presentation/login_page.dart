@@ -17,6 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
 
   static final _emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
 
@@ -42,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
       return 'Введите пароль';
     }
     if (value.length < 8) {
-      return 'Пароль должен содержать минимум 8 символов';
+      return 'Минимум 8 символов';
     }
     return null;
   }
@@ -84,25 +85,45 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     TextFormField(
                       controller: _emailController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Почта',
-                        border: OutlineInputBorder(),
-                        suffixIcon: Icon(Icons.close),
+                        border: const OutlineInputBorder(),
+                        suffixIcon: _emailController.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () {
+                                  _emailController.clear();
+                                  setState(() {});
+                                },
+                              )
+                            : null,
                       ),
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       validator: _validateEmail,
-                      onChanged: (_) => _formKey.currentState?.validate(),
+                      onChanged: (_) {
+                        setState(() {});
+                        _formKey.currentState?.validate();
+                      },
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _passwordController,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Пароль',
-                        border: OutlineInputBorder(),
-                        suffixIcon: Icon(Icons.visibility_off),
+                        border: const OutlineInputBorder(),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: () {
+                            setState(() => _obscurePassword = !_obscurePassword);
+                          },
+                        ),
                       ),
-                      obscureText: true,
+                      obscureText: _obscurePassword,
                       textInputAction: TextInputAction.done,
                       validator: _validatePassword,
                       onChanged: (_) => _formKey.currentState?.validate(),
@@ -113,9 +134,10 @@ class _LoginPageState extends State<LoginPage> {
                       builder: (context, state) {
                         String? errorMessage;
                         if (state.failure == AuthFailure.wrongPassword) {
-                          errorMessage = 'Неверный пароль. Попыток осталось: ${3 - state.failedAttempts}';
+                          final left = 3 - state.failedAttempts;
+                          errorMessage = 'Неверный пароль. Попыток: $left';
                         } else if (state.failure == AuthFailure.lockedOut) {
-                          errorMessage = 'Аккаунт заблокирован. Пользователь удалён.';
+                          errorMessage = 'Аккаунт заблокирован';
                         } else if (state.failure == AuthFailure.emptyFields) {
                           errorMessage = 'Заполните все поля';
                         }

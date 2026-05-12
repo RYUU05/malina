@@ -2,23 +2,18 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_state.dart';
-import '../domain/entities/cart_item.dart';
-import '../domain/usecases/cart_usecases.dart';
+import '../cart_repository.dart';
+import '../cart_item.dart';
 import 'cart_event.dart';
 import 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
-  final LoadCartUseCase _loadCartUseCase;
-  final SaveCartUseCase _saveCartUseCase;
+  final CartRepository _repo;
   final AuthBloc _authBloc;
   Timer? _debounceTimer;
   late final StreamSubscription<AuthState> _authSub;
 
-  CartBloc(
-    this._loadCartUseCase,
-    this._saveCartUseCase,
-    this._authBloc,
-  ) : super(const CartState()) {
+  CartBloc(this._repo, this._authBloc) : super(const CartState()) {
     on<CartLoaded>(_onLoaded);
     on<CartItemAdded>(_onItemAdded);
     on<CartItemRemoved>(_onItemRemoved);
@@ -33,7 +28,7 @@ class CartBloc extends Bloc<CartEvent, CartState> {
       }
       if (authState.status == AuthStatus.unauthenticated ||
           authState.status == AuthStatus.lockedOut) {
-        cancelPendingSave();
+        _cancelPendingSave();
         add(const CartLoaded(''));
       }
     });
@@ -45,43 +40,28 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   }
 
   Future<void> _onLoaded(CartLoaded event, Emitter<CartState> emit) async {
-    final items = await _loadCartUseCase(event.username);
+    final items = await _repo.loadCart(event.username);
     emit(state.copyWith(items: items, username: event.username));
   }
 
-  Future<void> _onItemAdded(
-    CartItemAdded event,
-    Emitter<CartState> emit,
-  ) async {
+  Future<void> _onItemAdded(CartItemAdded event, Emitter<CartState> emit) async {
     final updated = [...state.items, event.item];
     emit(state.copyWith(items: updated));
     _debounceSave(updated);
   }
 
-  Future<void> _onItemRemoved(
-    CartItemRemoved event,
-    Emitter<CartState> emit,
-  ) async {
+  Future<void> _onItemRemoved(CartItemRemoved event, Emitter<CartState> emit) async {
     final updated = state.items.where((i) => i.id != event.itemId).toList();
     emit(state.copyWith(items: updated));
     _debounceSave(updated);
   }
 
-  Future<void> _onQuantityChanged(
-    CartItemQuantityChanged event,
-    Emitter<CartState> emit,
-  ) async {
-    final updated = state.items
-        .map((i) {
-          if (i.id == event.itemId) {
-            final newQty = i.quantity + event.delta;
-            if (newQty <= 0) return i.copyWith(quantity: 0);
-            return i.copyWith(quantity: newQty);
-          }
-          return i;
-        })
-        .where((i) => i.quantity > 0)
-        .toList();
+  Future<void> _onQuantityChanged(CartItemQuantityChanged event, Emitter<CartState> emit) async {
+    final updated = state.items.map((i) {
+      if (i.id != event.itemId) return i;
+      final newQty = i.quantity + event.delta;
+      return i.copyWith(quantity: newQty > 0 ? newQty : 0);
+    }).where((i) => i.quantity > 0).toList();
 
     emit(state.copyWith(items: updated));
     _debounceSave(updated);
@@ -95,20 +75,11 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   void _debounceSave(List<CartItem> items) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      _saveCartUseCase(state.username, items);
+      _repo.saveCart(state.username, items);
     });
   }
 
-  Future<void> flushSave() async {
-    if (_debounceTimer != null && _debounceTimer!.isActive) {
-      _debounceTimer!.cancel();
-      await _saveCartUseCase(state.username, state.items);
-    }
-  }
-
-  void cancelPendingSave() {
-    _debounceTimer?.cancel();
-  }
+  void _cancelPendingSave() => _debounceTimer?.cancel();
 
   @override
   Future<void> close() {
@@ -117,3 +88,4 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     return super.close();
   }
 }
+

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:malina/features/cart/domain/entities/cart_item.dart';
+import 'package:malina/features/cart/cart_item.dart';
 
 import '../auth/bloc/auth_bloc.dart';
 import '../auth/bloc/auth_state.dart';
@@ -21,13 +21,13 @@ class MainShell extends StatefulWidget {
 
 class _MainShellState extends State<MainShell>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _cartCategoryMenuController;
-  bool _isCartCategoryMenuVisible = false;
+  late final AnimationController _menuController;
+  bool _menuVisible = false;
 
   @override
   void initState() {
     super.initState();
-    _cartCategoryMenuController = AnimationController(
+    _menuController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 320),
       reverseDuration: const Duration(milliseconds: 220),
@@ -36,12 +36,12 @@ class _MainShellState extends State<MainShell>
 
   @override
   void dispose() {
-    _cartCategoryMenuController.dispose();
+    _menuController.dispose();
     super.dispose();
   }
 
   Future<void> _openQrScanner(BuildContext context) async {
-    final scannedCode = await Navigator.of(context, rootNavigator: true)
+    final code = await Navigator.of(context, rootNavigator: true)
         .push<String>(
           MaterialPageRoute(
             fullscreenDialog: true,
@@ -49,56 +49,52 @@ class _MainShellState extends State<MainShell>
           ),
         );
 
-    if (!context.mounted || scannedCode == null) return;
+    if (!context.mounted || code == null) return;
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('QR-код отсканирован')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('QR-код отсканирован')),
+    );
   }
 
-  void _showCartCategoryMenu() {
-    if (_isCartCategoryMenuVisible) return;
-
-    setState(() => _isCartCategoryMenuVisible = true);
-    _cartCategoryMenuController.forward(from: 0);
+  void _showMenu() {
+    if (_menuVisible) return;
+    setState(() => _menuVisible = true);
+    _menuController.forward(from: 0);
   }
 
-  Future<void> _hideCartCategoryMenu() async {
-    if (!_isCartCategoryMenuVisible) return;
-
-    await _cartCategoryMenuController.reverse();
+  Future<void> _hideMenu() async {
+    if (!_menuVisible) return;
+    await _menuController.reverse();
     if (!mounted) return;
-
-    setState(() => _isCartCategoryMenuVisible = false);
+    setState(() => _menuVisible = false);
   }
 
-  Future<void> _openCartWithCategory(Category category) async {
-    await _hideCartCategoryMenu();
+  Future<void> _goToCart(Category category) async {
+    await _hideMenu();
     if (!mounted) return;
-
-    final categoryName = category == Category.beauty ? 'beauty' : 'food';
-    context.go('/cart?category=$categoryName');
+    final cat = category == Category.beauty ? 'beauty' : 'food';
+    context.go('/cart?category=$cat');
   }
 
-  void _onItemTapped(BuildContext context, int index) {
+  void _onTap(BuildContext context, int index) {
     switch (index) {
       case 0:
-        _hideCartCategoryMenu();
+        _hideMenu();
         context.go('/feed');
       case 1:
-        _hideCartCategoryMenu();
+        _hideMenu();
         context.go('/favorites');
       case 2:
-        _hideCartCategoryMenu();
+        _hideMenu();
         _openQrScanner(context);
       case 3:
-        _hideCartCategoryMenu();
+        _hideMenu();
         context.go('/profile');
       case 4:
-        if (_isCartCategoryMenuVisible) {
-          _hideCartCategoryMenu();
+        if (_menuVisible) {
+          _hideMenu();
         } else {
-          _showCartCategoryMenu();
+          _showMenu();
         }
     }
   }
@@ -119,20 +115,20 @@ class _MainShellState extends State<MainShell>
               body: Stack(
                 children: [
                   widget.child,
-                  if (showNav && _isCartCategoryMenuVisible)
+                  if (showNav && _menuVisible)
                     _CartCategorySelectorOverlay(
-                      controller: _cartCategoryMenuController,
+                      controller: _menuController,
                       beautyCount: beautyCount,
-                      onDismiss: _hideCartCategoryMenu,
-                      onFoodTap: () => _openCartWithCategory(Category.food),
-                      onBeautyTap: () => _openCartWithCategory(Category.beauty),
+                      onDismiss: _hideMenu,
+                      onFoodTap: () => _goToCart(Category.food),
+                      onBeautyTap: () => _goToCart(Category.beauty),
                     ),
                 ],
               ),
               bottomNavigationBar: showNav
                   ? BottomNavigationBar(
                       currentIndex: widget.currentIndex,
-                      onTap: (index) => _onItemTapped(context, index),
+                      onTap: (index) => _onTap(context, index),
                       type: BottomNavigationBarType.fixed,
                       selectedItemColor: const Color(0xFFF62C5B),
                       unselectedItemColor: Colors.grey,
@@ -254,7 +250,7 @@ class _CartCategorySelectorOverlay extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _AnimatedCartCategoryOption(
+                    _AnimatedCategoryOption(
                       controller: controller,
                       animationStart: 0.22,
                       icon: Icons.restaurant,
@@ -262,7 +258,7 @@ class _CartCategorySelectorOverlay extends StatelessWidget {
                       onTap: onFoodTap,
                     ),
                     const SizedBox(height: 18),
-                    _AnimatedCartCategoryOption(
+                    _AnimatedCategoryOption(
                       controller: controller,
                       animationStart: 0,
                       icon: Icons.spa,
@@ -281,7 +277,7 @@ class _CartCategorySelectorOverlay extends StatelessWidget {
   }
 }
 
-class _AnimatedCartCategoryOption extends StatelessWidget {
+class _AnimatedCategoryOption extends StatelessWidget {
   final AnimationController controller;
   final double animationStart;
   final IconData icon;
@@ -289,7 +285,7 @@ class _AnimatedCartCategoryOption extends StatelessWidget {
   final int badgeCount;
   final VoidCallback onTap;
 
-  const _AnimatedCartCategoryOption({
+  const _AnimatedCategoryOption({
     required this.controller,
     required this.animationStart,
     required this.icon,
@@ -302,25 +298,23 @@ class _AnimatedCartCategoryOption extends StatelessWidget {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: controller,
-      child: _CartCategoryBubble(
+      child: _CategoryBubble(
         icon: icon,
         label: label,
         badgeCount: badgeCount,
         onTap: onTap,
       ),
       builder: (context, child) {
-        final rawProgress =
-            ((controller.value - animationStart) / (1 - animationStart)).clamp(
-              0.0,
-              1.0,
-            );
-        final slideProgress = Curves.easeOutBack.transform(rawProgress);
-        final fadeProgress = Curves.easeOut.transform(rawProgress);
+        final progress =
+            ((controller.value - animationStart) / (1 - animationStart))
+                .clamp(0.0, 1.0);
+        final slide = Curves.easeOutBack.transform(progress);
+        final fade = Curves.easeOut.transform(progress);
 
         return Opacity(
-          opacity: fadeProgress,
+          opacity: fade,
           child: Transform.translate(
-            offset: Offset(0, (1 - slideProgress) * 26),
+            offset: Offset(0, (1 - slide) * 26),
             child: child,
           ),
         );
@@ -329,13 +323,13 @@ class _AnimatedCartCategoryOption extends StatelessWidget {
   }
 }
 
-class _CartCategoryBubble extends StatelessWidget {
+class _CategoryBubble extends StatelessWidget {
   final IconData icon;
   final String label;
   final int badgeCount;
   final VoidCallback onTap;
 
-  const _CartCategoryBubble({
+  const _CategoryBubble({
     required this.icon,
     required this.label,
     required this.badgeCount,

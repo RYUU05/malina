@@ -22,7 +22,6 @@ class MalinaPainter extends CustomPainter {
     final rx = size.width * 0.44;
     final ry = size.height * 0.44;
 
-    // Shadow
     canvas.drawOval(
       Rect.fromCenter(
         center: Offset(cx, cy + 6),
@@ -32,49 +31,38 @@ class MalinaPainter extends CustomPainter {
       shadowPaint,
     );
 
-    // Main blob — slightly organic shape using path
     final path = Path();
-
-    // Top
     path.moveTo(cx, cy - ry);
-    // Top-right bump
     path.quadraticBezierTo(
       cx + rx * 0.7,
       cy - ry * 0.9,
       cx + rx,
       cy - ry * 0.2,
     );
-    // Right bump
     path.quadraticBezierTo(
       cx + rx * 1.05,
       cy + ry * 0.3,
       cx + rx * 0.6,
       cy + ry * 0.7,
     );
-    // Bottom-right
     path.quadraticBezierTo(cx + rx * 0.3, cy + ry * 1.05, cx, cy + ry);
-    // Bottom-left
     path.quadraticBezierTo(
       cx - rx * 0.3,
       cy + ry * 1.05,
       cx - rx * 0.6,
       cy + ry * 0.7,
     );
-    // Left bump
     path.quadraticBezierTo(
       cx - rx * 1.05,
       cy + ry * 0.3,
       cx - rx,
       cy - ry * 0.2,
     );
-    // Top-left bump
     path.quadraticBezierTo(cx - rx * 0.7, cy - ry * 0.9, cx, cy - ry);
-
     path.close();
 
     canvas.drawPath(path, paint);
 
-    // Small decorative circles (berry-like dots)
     final dotPaint = Paint()
       ..color = color.withValues(alpha: 0.5)
       ..style = PaintingStyle.fill;

@@ -38,22 +38,18 @@ class ProfilePage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // User email
                 Text(
-                  state.username ?? 'unknown@email.com',
+                  state.username ?? '',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const Spacer(),
-                // Delete button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _showDeleteConfirmDialog(context);
-                    },
+                    onPressed: () => _showDeleteDialog(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFF62C5B),
                       foregroundColor: Colors.white,
@@ -63,7 +59,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ),
                     child: const Text(
-                      'Удалить',
+                      'Удалить аккаунт',
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
@@ -77,22 +73,20 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  void _showDeleteConfirmDialog(BuildContext context) {
+  void _showDeleteDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         title: const Text('Удалить аккаунт'),
-        content: const Text(
-          'Вы уверены? Все данные будут удалены безвозвратно.',
-        ),
+        content: const Text('Вы уверены? Все данные будут удалены.'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
+            onPressed: () => Navigator.of(ctx).pop(),
             child: const Text('Отмена'),
           ),
           TextButton(
             onPressed: () {
-              Navigator.of(dialogContext).pop();
+              Navigator.of(ctx).pop();
               context.read<AuthBloc>().add(const AuthUserDeleted());
             },
             child: const Text('Удалить', style: TextStyle(color: Colors.red)),

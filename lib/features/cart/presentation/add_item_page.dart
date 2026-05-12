@@ -5,7 +5,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_event.dart';
-import '../domain/entities/cart_item.dart';
+import '../cart_item.dart';
 
 class AddItemPage extends StatefulWidget {
   const AddItemPage({super.key});
@@ -16,7 +16,6 @@ class AddItemPage extends StatefulWidget {
 
 class _AddItemPageState extends State<AddItemPage> {
   final _formKey = GlobalKey<FormState>();
-  final _categoryController = TextEditingController();
   final _subcategoryController = TextEditingController();
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
@@ -27,7 +26,6 @@ class _AddItemPageState extends State<AddItemPage> {
 
   @override
   void dispose() {
-    _categoryController.dispose();
     _subcategoryController.dispose();
     _nameController.dispose();
     _priceController.dispose();
@@ -60,13 +58,10 @@ class _AddItemPageState extends State<AddItemPage> {
     final String? code = capture.barcodes.first.rawValue;
     if (code == null) return;
 
-    // Parse QR code and fill fields
     if (code.startsWith('food')) {
       _selectedCategory = Category.food;
-      _categoryController.text = 'Еда';
     } else if (code.startsWith('beauty')) {
       _selectedCategory = Category.beauty;
-      _categoryController.text = 'Бьюти';
     }
 
     final parts = code.split('/');
@@ -76,17 +71,16 @@ class _AddItemPageState extends State<AddItemPage> {
       _priceController.text = parts[3];
       _descriptionController.text = parts.sublist(4).join('/');
     } else {
-      // Extract name from QR code (after prefix)
       final name = code.replaceFirst(RegExp(r'^(food|beauty)'), '');
-      _nameController.text = name.isNotEmpty ? name : '';
+      _nameController.text = name;
     }
 
     setState(() => _isScanning = false);
   }
 
   String? _emptyToNull(String value) {
-    final trimmed = value.trim();
-    return trimmed.isEmpty ? null : trimmed;
+    final t = value.trim();
+    return t.isEmpty ? null : t;
   }
 
   int? _parsePrice(String value) {
@@ -142,57 +136,41 @@ class _AddItemPageState extends State<AddItemPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Category dropdown
                     _buildDropdownField(
                       label: 'Категория',
-                      value: _selectedCategory == Category.food
-                          ? 'Еда'
-                          : 'Бьюти',
+                      value: _selectedCategory == Category.food ? 'Еда' : 'Бьюти',
                       items: const ['Еда', 'Бьюти'],
                       onChanged: (value) {
                         setState(() {
-                          _selectedCategory = value == 'Еда'
-                              ? Category.food
-                              : Category.beauty;
-                          _categoryController.text = value ?? '';
+                          _selectedCategory =
+                              value == 'Еда' ? Category.food : Category.beauty;
                         });
                       },
                     ),
                     const SizedBox(height: 16),
-
-                    // Subcategory field
                     _buildTextField(
                       controller: _subcategoryController,
                       label: 'Подкатегория',
                     ),
                     const SizedBox(height: 16),
-
-                    // Name field
                     _buildTextField(
                       controller: _nameController,
                       label: 'Название',
-                      validator: (v) => v == null || v.trim().isEmpty
-                          ? 'Введите название'
-                          : null,
+                      validator: (v) =>
+                          v == null || v.trim().isEmpty ? 'Введите название' : null,
                     ),
                     const SizedBox(height: 16),
-
-                    // Price field
                     _buildTextField(
                       controller: _priceController,
                       label: 'Цена',
                       keyboardType: TextInputType.number,
                     ),
                     const SizedBox(height: 16),
-
-                    // Description label
                     const Text(
                       'Описание',
                       style: TextStyle(fontSize: 14, color: Colors.black54),
                     ),
                     const SizedBox(height: 8),
-
-                    // Description field
                     Container(
                       decoration: BoxDecoration(
                         color: const Color(0xFFFFE8E8),
@@ -209,8 +187,6 @@ class _AddItemPageState extends State<AddItemPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    // Save button
                     ElevatedButton(
                       onPressed: _onSave,
                       style: ElevatedButton.styleFrom(
@@ -231,7 +207,6 @@ class _AddItemPageState extends State<AddItemPage> {
               ),
             ),
           ),
-          // Wavy bottom
           CustomPaint(
             size: const Size(double.infinity, 40),
             painter: _WavyBottomPainter(),
@@ -261,10 +236,8 @@ class _AddItemPageState extends State<AddItemPage> {
           labelText: label,
           labelStyle: TextStyle(color: Colors.grey.shade600),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 16,
-          ),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         ),
       ),
     );
@@ -289,14 +262,12 @@ class _AddItemPageState extends State<AddItemPage> {
             labelText: label,
             labelStyle: TextStyle(color: Colors.grey.shade600),
             border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 16,
-            ),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
-          items: items.map((item) {
-            return DropdownMenuItem(value: item, child: Text(item));
-          }).toList(),
+          items: items
+              .map((item) => DropdownMenuItem(value: item, child: Text(item)))
+              .toList(),
           onChanged: onChanged,
         ),
       ),
@@ -314,7 +285,6 @@ class _WavyBottomPainter extends CustomPainter {
     final path = Path();
     path.moveTo(0, 0);
 
-    // Create wavy pattern
     final waveWidth = size.width / 5;
     for (int i = 0; i < 5; i++) {
       final x = i * waveWidth;
