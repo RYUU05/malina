@@ -6,7 +6,7 @@ import '../../features/auth/bloc/auth_state.dart';
 import '../../features/auth/presentation/login_page.dart';
 import '../../features/cart/presentation/add_item_page.dart';
 import '../../features/cart/presentation/cart_page.dart';
-import '../../features/home/presentation/favorites_page.dart';
+import '../../features/favorites/presentation/favorites_page.dart';
 import '../../features/home/presentation/home_page.dart';
 import '../../features/profile/presentation/profile_page.dart';
 import '../../features/shell/main_shell.dart';
@@ -32,10 +32,7 @@ GoRouter _createRouter(AuthBloc authBloc) {
           return MainShell(currentIndex: idx, child: child);
         },
         routes: [
-          GoRoute(
-            path: '/feed',
-            builder: (context, state) => const HomePage(),
-          ),
+          GoRoute(path: '/feed', builder: (context, state) => const HomePage()),
           GoRoute(
             path: '/favorites',
             builder: (context, state) => const FavoritesPage(),
