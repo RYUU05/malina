@@ -1,4 +1,7 @@
 import 'package:get_it/get_it.dart';
+import 'package:malina/features/favorites/bloc/favorites_bloc.dart';
+import 'package:malina/features/favorites/data/favorites_repository.dart';
+import 'package:malina/features/favorites/data/favorites_repository_impl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/auth/auth_repository.dart';
@@ -13,17 +16,24 @@ Future<void> setupDependencies() async {
   locator.registerLazySingleton<SharedPreferences>(() => prefs);
 
   // Repositories
-  locator.registerLazySingleton<AuthRepository>(() => AuthRepository(locator()));
-  locator.registerLazySingleton<CartRepository>(() => CartRepository(locator()));
+  locator.registerLazySingleton<AuthRepository>(
+    () => AuthRepository(locator()),
+  );
+  locator.registerLazySingleton<CartRepository>(
+    () => CartRepository(locator()),
+  );
+  locator.registerLazySingleton<FavoritesRepository>(
+    () => FavoritesRemositoryImpl(),
+  );
 
   // Blocs
   locator.registerLazySingleton<AuthBloc>(() => AuthBloc(locator()));
-  
+
   locator.registerFactory<CartBloc>(
-    () => CartBloc(
-      locator(),
-      locator<AuthBloc>(),
-    ),
+    () => CartBloc(locator(), locator<AuthBloc>()),
+  );
+
+  locator.registerFactory<FavoritesBloc>(
+    () => FavoritesBloc(repository: locator()),
   );
 }
-
