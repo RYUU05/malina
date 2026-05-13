@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:malina/features/favorites/data/favorite_repository.dart';
+import 'package:malina/features/favorites/data/favorites_repository.dart';
 import 'package:malina/features/favorites/domain/favorite_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class FavoriteRemositoryImpl implements FavoriteRepository {
+class FavoritesRemositoryImpl implements FavoritesRepository {
   static const String _key = 'favorite';
   @override
   Future<List<FavoriteItem>> getFavorites() async {
