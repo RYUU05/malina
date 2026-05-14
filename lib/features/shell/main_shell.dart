@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:malina/features/cart/cart_item.dart';
+import 'package:malina/features/cart/domain/cart_item.dart';
 
 import '../auth/bloc/auth_bloc.dart';
 import '../auth/bloc/auth_state.dart';
@@ -41,19 +41,18 @@ class _MainShellState extends State<MainShell>
   }
 
   Future<void> _openQrScanner(BuildContext context) async {
-    final code = await Navigator.of(context, rootNavigator: true)
-        .push<String>(
-          MaterialPageRoute(
-            fullscreenDialog: true,
-            builder: (_) => const QrScannerPage(),
-          ),
-        );
+    final code = await Navigator.of(context, rootNavigator: true).push<String>(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => const QrScannerPage(),
+      ),
+    );
 
     if (!context.mounted || code == null) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('QR-код отсканирован')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('QR-код отсканирован')));
   }
 
   void _showMenu() {
@@ -306,8 +305,10 @@ class _AnimatedCategoryOption extends StatelessWidget {
       ),
       builder: (context, child) {
         final progress =
-            ((controller.value - animationStart) / (1 - animationStart))
-                .clamp(0.0, 1.0);
+            ((controller.value - animationStart) / (1 - animationStart)).clamp(
+              0.0,
+              1.0,
+            );
         final slide = Curves.easeOutBack.transform(progress);
         final fade = Curves.easeOut.transform(progress);
 

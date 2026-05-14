@@ -5,7 +5,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_event.dart';
-import '../cart_item.dart';
+import '../domain/cart_item.dart';
 
 class AddItemPage extends StatefulWidget {
   const AddItemPage({super.key});
@@ -138,12 +138,15 @@ class _AddItemPageState extends State<AddItemPage> {
                   children: [
                     _buildDropdownField(
                       label: 'Категория',
-                      value: _selectedCategory == Category.food ? 'Еда' : 'Бьюти',
+                      value: _selectedCategory == Category.food
+                          ? 'Еда'
+                          : 'Бьюти',
                       items: const ['Еда', 'Бьюти'],
                       onChanged: (value) {
                         setState(() {
-                          _selectedCategory =
-                              value == 'Еда' ? Category.food : Category.beauty;
+                          _selectedCategory = value == 'Еда'
+                              ? Category.food
+                              : Category.beauty;
                         });
                       },
                     ),
@@ -156,8 +159,9 @@ class _AddItemPageState extends State<AddItemPage> {
                     _buildTextField(
                       controller: _nameController,
                       label: 'Название',
-                      validator: (v) =>
-                          v == null || v.trim().isEmpty ? 'Введите название' : null,
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'Введите название'
+                          : null,
                     ),
                     const SizedBox(height: 16),
                     _buildTextField(
@@ -236,8 +240,10 @@ class _AddItemPageState extends State<AddItemPage> {
           labelText: label,
           labelStyle: TextStyle(color: Colors.grey.shade600),
           border: InputBorder.none,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 16,
+          ),
         ),
       ),
     );
@@ -262,8 +268,10 @@ class _AddItemPageState extends State<AddItemPage> {
             labelText: label,
             labelStyle: TextStyle(color: Colors.grey.shade600),
             border: InputBorder.none,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
           ),
           items: items
               .map((item) => DropdownMenuItem(value: item, child: Text(item)))

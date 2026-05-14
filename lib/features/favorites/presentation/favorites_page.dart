@@ -17,7 +17,7 @@ class FavoritesPage extends StatelessWidget {
             if (state is FavoritesLoaded) {
               if (state.items.isEmpty) {
                 return Center(
-                  child: Text('Тут пусто', style: TextStyle(fontSize: 30)),
+                  child: Text('Тут пусто', style: TextStyle(fontSize: 304)),
                 );
               }
 

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:malina/features/cart/data/cart_repository.dart';
 import '../../auth/bloc/auth_bloc.dart';
 import '../../auth/bloc/auth_state.dart';
-import '../cart_repository.dart';
-import '../cart_item.dart';
+import '../domain/cart_item.dart';
 import 'cart_event.dart';
 import 'cart_state.dart';
 
@@ -44,24 +44,36 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     emit(state.copyWith(items: items, username: event.username));
   }
 
-  Future<void> _onItemAdded(CartItemAdded event, Emitter<CartState> emit) async {
+  Future<void> _onItemAdded(
+    CartItemAdded event,
+    Emitter<CartState> emit,
+  ) async {
     final updated = [...state.items, event.item];
     emit(state.copyWith(items: updated));
     _debounceSave(updated);
   }
 
-  Future<void> _onItemRemoved(CartItemRemoved event, Emitter<CartState> emit) async {
+  Future<void> _onItemRemoved(
+    CartItemRemoved event,
+    Emitter<CartState> emit,
+  ) async {
     final updated = state.items.where((i) => i.id != event.itemId).toList();
     emit(state.copyWith(items: updated));
     _debounceSave(updated);
   }
 
-  Future<void> _onQuantityChanged(CartItemQuantityChanged event, Emitter<CartState> emit) async {
-    final updated = state.items.map((i) {
-      if (i.id != event.itemId) return i;
-      final newQty = i.quantity + event.delta;
-      return i.copyWith(quantity: newQty > 0 ? newQty : 0);
-    }).where((i) => i.quantity > 0).toList();
+  Future<void> _onQuantityChanged(
+    CartItemQuantityChanged event,
+    Emitter<CartState> emit,
+  ) async {
+    final updated = state.items
+        .map((i) {
+          if (i.id != event.itemId) return i;
+          final newQty = i.quantity + event.delta;
+          return i.copyWith(quantity: newQty > 0 ? newQty : 0);
+        })
+        .where((i) => i.quantity > 0)
+        .toList();
 
     emit(state.copyWith(items: updated));
     _debounceSave(updated);
@@ -88,4 +100,3 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     return super.close();
   }
 }
-

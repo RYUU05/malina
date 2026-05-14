@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../bloc/cart_bloc.dart';
 import '../bloc/cart_event.dart';
 import '../bloc/cart_state.dart';
-import '../cart_item.dart';
+import '../domain/cart_item.dart';
 
 class CartPage extends StatefulWidget {
   final String? categoryFilter;
@@ -23,7 +23,9 @@ class _CartPageState extends State<CartPage> {
   @override
   void initState() {
     super.initState();
-    _selectedCategory = widget.categoryFilter == 'beauty' ? Category.beauty : Category.food;
+    _selectedCategory = widget.categoryFilter == 'beauty'
+        ? Category.beauty
+        : Category.food;
   }
 
   @override
@@ -31,7 +33,9 @@ class _CartPageState extends State<CartPage> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.categoryFilter != widget.categoryFilter) {
       setState(() {
-        _selectedCategory = widget.categoryFilter == 'beauty' ? Category.beauty : Category.food;
+        _selectedCategory = widget.categoryFilter == 'beauty'
+            ? Category.beauty
+            : Category.food;
       });
     }
   }
@@ -88,7 +92,10 @@ class _CartPageState extends State<CartPage> {
           ),
           TextButton(
             onPressed: () => _clearCart(context),
-            child: const Text('Очистить', style: TextStyle(color: Color(0xFF222222), fontSize: 16)),
+            child: const Text(
+              'Очистить',
+              style: TextStyle(color: Color(0xFF222222), fontSize: 16),
+            ),
           ),
         ],
       ),
@@ -101,7 +108,10 @@ class _CartPageState extends State<CartPage> {
       builder: (ctx) => AlertDialog(
         title: const Text('Очистить?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Нет')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Нет'),
+          ),
           TextButton(
             onPressed: () {
               context.read<CartBloc>().add(const CartCleared());
@@ -125,14 +135,30 @@ class _CategoryTabs extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: _tab(label: 'Еда', active: selected == Category.food, cat: Category.food)),
+        Expanded(
+          child: _tab(
+            label: 'Еда',
+            active: selected == Category.food,
+            cat: Category.food,
+          ),
+        ),
         const SizedBox(width: 16),
-        Expanded(child: _tab(label: 'Бьюти', active: selected == Category.beauty, cat: Category.beauty)),
+        Expanded(
+          child: _tab(
+            label: 'Бьюти',
+            active: selected == Category.beauty,
+            cat: Category.beauty,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _tab({required String label, required bool active, required Category cat}) {
+  Widget _tab({
+    required String label,
+    required bool active,
+    required Category cat,
+  }) {
     return GestureDetector(
       onTap: () => onChanged(cat),
       child: Container(
@@ -164,18 +190,23 @@ class _CartList extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<CartBloc, CartState>(
       builder: (context, state) {
-        final filtered = state.items.where((i) => i.category == category).toList();
+        final filtered = state.items
+            .where((i) => i.category == category)
+            .toList();
         if (filtered.isEmpty) return const _EmptyView();
 
         final groups = <String, List<CartItem>>{};
         for (var item in filtered) {
-          final key = item.subcategory ?? (category == Category.food ? 'Еда' : 'Бьюти');
+          final key =
+              item.subcategory ?? (category == Category.food ? 'Еда' : 'Бьюти');
           groups.putIfAbsent(key, () => []).add(item);
         }
 
         return ListView(
           padding: const EdgeInsets.all(20),
-          children: groups.entries.map((e) => _GroupCard(title: e.key, items: e.value)).toList(),
+          children: groups.entries
+              .map((e) => _GroupCard(title: e.key, items: e.value))
+              .toList(),
         );
       },
     );
@@ -190,7 +221,10 @@ class _GroupCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final total = items.fold(0, (sum, i) => sum + ((i.price ?? 0) * i.quantity));
+    final total = items.fold(
+      0,
+      (sum, i) => sum + ((i.price ?? 0) * i.quantity),
+    );
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -198,13 +232,18 @@ class _GroupCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+        ],
       ),
       child: Column(
         children: [
           Row(
             children: [
-              Text(title, style: const TextStyle(color: Colors.grey, fontSize: 16)),
+              Text(
+                title,
+                style: const TextStyle(color: Colors.grey, fontSize: 16),
+              ),
               const Spacer(),
               const Icon(Icons.chevron_right, color: Colors.grey),
             ],
@@ -239,12 +278,30 @@ class _ItemRow extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(child: Text(item.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16))),
-                    Text('${item.price ?? 0} С', style: const TextStyle(fontWeight: FontWeight.bold, decoration: TextDecoration.underline)),
+                    Expanded(
+                      child: Text(
+                        item.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '${item.price ?? 0} С',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text(item.description ?? '', style: const TextStyle(color: Colors.grey, fontSize: 13), maxLines: 2),
+                Text(
+                  item.description ?? '',
+                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+                  maxLines: 2,
+                ),
                 const SizedBox(height: 12),
                 _QtySelector(item: item),
               ],
@@ -262,9 +319,16 @@ class _ImagePlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 80, height: 80,
-      decoration: BoxDecoration(color: const Color(0xFFF8F8F8), borderRadius: BorderRadius.circular(10)),
-      child: Icon(cat == Category.food ? Icons.fastfood : Icons.face, color: Colors.grey),
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F8F8),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(
+        cat == Category.food ? Icons.fastfood : Icons.face,
+        color: Colors.grey,
+      ),
     );
   }
 }
@@ -278,11 +342,19 @@ class _QtySelector extends StatelessWidget {
     return Row(
       children: [
         _btn(Icons.remove, () => _change(-1, context)),
-        SizedBox(width: 30, child: Text('${item.quantity}', textAlign: TextAlign.center, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold))),
+        SizedBox(
+          width: 30,
+          child: Text(
+            '${item.quantity}',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
         _btn(Icons.add, () => _change(1, context)),
         const Spacer(),
         IconButton(
-          onPressed: () => context.read<CartBloc>().add(CartItemRemoved(item.id)),
+          onPressed: () =>
+              context.read<CartBloc>().add(CartItemRemoved(item.id)),
           icon: const Icon(Icons.delete_outline),
         ),
       ],
@@ -290,7 +362,9 @@ class _QtySelector extends StatelessWidget {
   }
 
   void _change(int d, BuildContext context) {
-    context.read<CartBloc>().add(CartItemQuantityChanged(itemId: item.id, delta: d));
+    context.read<CartBloc>().add(
+      CartItemQuantityChanged(itemId: item.id, delta: d),
+    );
   }
 
   Widget _btn(IconData icon, VoidCallback onTap) {
@@ -298,7 +372,10 @@ class _QtySelector extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(color: const Color(0xFFF7F7F7), borderRadius: BorderRadius.circular(8)),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF7F7F7),
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Icon(icon, size: 20),
       ),
     );
@@ -313,9 +390,19 @@ class _TotalButton extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 50,
-      decoration: BoxDecoration(color: const Color(0xFFF62C5B), borderRadius: BorderRadius.circular(10)),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF62C5B),
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: Center(
-        child: Text('Всего $total С', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+        child: Text(
+          'Всего $total С',
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
       ),
     );
   }
@@ -325,6 +412,8 @@ class _EmptyView extends StatelessWidget {
   const _EmptyView();
   @override
   Widget build(BuildContext context) {
-    return const Center(child: Text('Пусто', style: TextStyle(color: Colors.grey)));
+    return const Center(
+      child: Text('Пусто', style: TextStyle(color: Colors.grey)),
+    );
   }
 }
