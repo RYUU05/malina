@@ -16,8 +16,7 @@ class AuthRepository {
   Future<AuthResult> login(String username, String password) async {
     if (username.isEmpty || password.isEmpty) return AuthResult.emptyFields;
 
-    // Имитация логики: пароль должен быть 'admin'
-    if (password == 'admin') {
+    if (password == 'admin123') {
       await _prefs.setString(_keyUser, username);
       await _prefs.setInt(_keyAttempts + username, 0);
       return AuthResult.success;
@@ -27,7 +26,7 @@ class AuthRepository {
     await _prefs.setInt(_keyAttempts + username, attempts);
 
     if (attempts >= 3) {
-      await logout(); // Удаляем пользователя если он был
+      await logout();
       return AuthResult.lockedOut;
     }
 

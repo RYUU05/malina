@@ -16,7 +16,9 @@ class FavoritesPage extends StatelessWidget {
           builder: (context, state) {
             if (state is FavoritesLoaded) {
               if (state.items.isEmpty) {
-                return Text('Тут пусто');
+                return Center(
+                  child: Text('Тут пусто', style: TextStyle(fontSize: 30)),
+                );
               }
 
               return ListView.builder(
