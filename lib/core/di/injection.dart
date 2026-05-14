@@ -24,7 +24,7 @@ Future<void> setupDependencies() async {
     () => CartRepositoryImpl(locator()),
   );
   locator.registerLazySingleton<FavoritesRepository>(
-    () => FavoritesRemositoryImpl(),
+    () => FavoritesRepositoryImpl(locator()),
   );
 
   // Blocs

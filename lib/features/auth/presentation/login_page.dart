@@ -67,7 +67,7 @@ class _LoginPageState extends State<LoginPage> {
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state.status == AuthStatus.authenticated) {
-            context.go('/cart');
+            context.go('/feed');
           }
         },
         child: Center(
@@ -119,7 +119,9 @@ class _LoginPageState extends State<LoginPage> {
                                 : Icons.visibility,
                           ),
                           onPressed: () {
-                            setState(() => _obscurePassword = !_obscurePassword);
+                            setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            );
                           },
                         ),
                       ),

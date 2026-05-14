@@ -34,30 +34,38 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     switch (result) {
       case AuthResult.success:
-        emit(state.copyWith(
-          status: AuthStatus.authenticated,
-          username: event.username,
-          failure: AuthFailure.none,
-          failedAttempts: 0,
-        ));
+        emit(
+          state.copyWith(
+            status: AuthStatus.authenticated,
+            username: event.username,
+            failure: AuthFailure.none,
+            failedAttempts: 0,
+          ),
+        );
       case AuthResult.wrongPassword:
         final attempts = _repo.getFailedAttempts(event.username);
-        emit(state.copyWith(
-          status: AuthStatus.unauthenticated,
-          failure: AuthFailure.wrongPassword,
-          failedAttempts: attempts,
-        ));
+        emit(
+          state.copyWith(
+            status: AuthStatus.unauthenticated,
+            failure: AuthFailure.wrongPassword,
+            failedAttempts: attempts,
+          ),
+        );
       case AuthResult.lockedOut:
-        emit(state.copyWith(
-          status: AuthStatus.lockedOut,
-          failure: AuthFailure.lockedOut,
-          failedAttempts: 3,
-        ));
+        emit(
+          state.copyWith(
+            status: AuthStatus.lockedOut,
+            failure: AuthFailure.lockedOut,
+            failedAttempts: 3,
+          ),
+        );
       case AuthResult.emptyFields:
-        emit(state.copyWith(
-          status: AuthStatus.unauthenticated,
-          failure: AuthFailure.emptyFields,
-        ));
+        emit(
+          state.copyWith(
+            status: AuthStatus.unauthenticated,
+            failure: AuthFailure.emptyFields,
+          ),
+        );
     }
   }
 
@@ -79,4 +87,3 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthState(status: AuthStatus.unauthenticated));
   }
 }
-

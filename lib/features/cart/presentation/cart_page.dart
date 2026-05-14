@@ -233,7 +233,10 @@ class _GroupCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+          ),
         ],
       ),
       child: Column(
@@ -288,7 +291,7 @@ class _ItemRow extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${item.price ?? 0} С',
+                      '${item.price ?? 0} ₸',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         decoration: TextDecoration.underline,
@@ -396,7 +399,7 @@ class _TotalButton extends StatelessWidget {
       ),
       child: Center(
         child: Text(
-          'Всего $total С',
+          'Всего $total ₸',
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -413,7 +416,10 @@ class _EmptyView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('Пусто', style: TextStyle(color: Colors.grey)),
+      child: Text(
+        'В этой категории пока нет товаров',
+        style: TextStyle(color: Colors.grey),
+      ),
     );
   }
 }

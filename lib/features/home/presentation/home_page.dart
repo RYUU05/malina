@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../qr/presentation/qr_scanner_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -18,7 +19,10 @@ class HomePage extends StatelessWidget {
                   decoration: InputDecoration(
                     hintText: 'Искать в Malina',
                     prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
                     filled: true,
                     fillColor: Colors.grey[100],
                   ),
@@ -43,16 +47,19 @@ class HomePage extends StatelessWidget {
                 title: 'Бьюти',
                 desc: 'Салоны красоты\nи товары',
                 color: const Color(0xFFFFE4E1),
-                img: 'assets/buatyBanner.png',
+                img: 'assets/beautyBanner.png',
               ),
             ),
-            const SliverToBoxAdapter(child: Padding(
-              padding: EdgeInsets.fromLTRB(16, 24, 16, 16),
-              child: Text('Скоро в Malina', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            )),
-            SliverToBoxAdapter(
-              child: _SoonList(),
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(16, 24, 16, 16),
+                child: Text(
+                  'Скоро в Malina',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
             ),
+            SliverToBoxAdapter(child: _SoonList()),
             const SliverToBoxAdapter(child: SizedBox(height: 40)),
           ],
         ),
@@ -63,10 +70,15 @@ class HomePage extends StatelessWidget {
   void _openScanner(BuildContext context) async {
     final res = await Navigator.push<String>(
       context,
-      MaterialPageRoute(builder: (_) => const QrScannerPage(), fullscreenDialog: true),
+      MaterialPageRoute(
+        builder: (_) => const QrScannerPage(),
+        fullscreenDialog: true,
+      ),
     );
     if (res != null && context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('QR: $res')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('QR-код успешно отсканирован')),
+      );
     }
   }
 }
@@ -80,22 +92,38 @@ class _QrBanner extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: const Color(0xFFF62C5B), borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF62C5B),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Row(
         children: [
           GestureDetector(
             onTap: onTap,
             child: Container(
               padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
-              child: Image.asset("assets/Frame.png", width: 36, height: 50, errorBuilder: (c, e, s) => const Icon(Icons.qr_code, color: Colors.white)),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Image.asset(
+                'assets/Frame.png',
+                width: 36,
+                height: 50,
+                errorBuilder: (c, e, s) =>
+                    const Icon(Icons.qr_code, color: Colors.white),
+              ),
             ),
           ),
           const SizedBox(width: 16),
           const Expanded(
             child: Text(
               'Сканируй QR-код и заказывай прямо в заведении',
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ],
@@ -108,27 +136,47 @@ class _CategoryBox extends StatelessWidget {
   final String title, desc, img;
   final Color color;
 
-  const _CategoryBox({required this.title, required this.desc, required this.color, required this.img});
+  const _CategoryBox({
+    required this.title,
+    required this.desc,
+    required this.color,
+    required this.img,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 150,
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Stack(
         children: [
-          Positioned.fill(child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.asset(img, fit: BoxFit.cover, errorBuilder: (c, e, s) => const SizedBox()),
-          )),
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                img,
+                fit: BoxFit.cover,
+                errorBuilder: (c, e, s) => const SizedBox(),
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(title, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(desc, style: const TextStyle(fontSize: 14)),
               ],
@@ -141,6 +189,8 @@ class _CategoryBox extends StatelessWidget {
 }
 
 class _SoonList extends StatelessWidget {
+  const _SoonList();
+
   @override
   Widget build(BuildContext context) {
     final items = [
@@ -158,8 +208,16 @@ class _SoonList extends StatelessWidget {
         itemBuilder: (c, i) => Container(
           width: 85,
           margin: const EdgeInsets.only(right: 12),
-          decoration: BoxDecoration(color: items[i].$2, borderRadius: BorderRadius.circular(12)),
-          child: Center(child: Text(items[i].$1, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500))),
+          decoration: BoxDecoration(
+            color: items[i].$2,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: Text(
+              items[i].$1,
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+            ),
+          ),
         ),
       ),
     );

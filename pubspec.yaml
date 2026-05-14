@@ -1,5 +1,5 @@
 name: malina
-description: "A new Flutter project."
+description: "Flutter demo application for food and beauty ordering."
 
 publish_to: 'none' 
 version: 1.0.0+1
@@ -41,7 +41,7 @@ flutter:
 
   assets:
     - assets/foodBanner.png
-    - assets/buatyBanner.png
+    - assets/beautyBanner.png
     - assets/shampoo.png
     - assets/pizza.png
     - assets/Icon.png

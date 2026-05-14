@@ -9,6 +9,7 @@ class CartRepositoryImpl implements CartRepository {
 
   CartRepositoryImpl(this._prefs);
 
+  @override
   Future<List<CartItem>> loadCart(String username) async {
     if (username.isEmpty) return [];
     final json = _prefs.getString(_keyPrefix + username);
@@ -20,12 +21,14 @@ class CartRepositoryImpl implements CartRepository {
         .toList();
   }
 
+  @override
   Future<void> saveCart(String username, List<CartItem> items) async {
     if (username.isEmpty) return;
     final json = jsonEncode(items.map((e) => e.toJson()).toList());
     await _prefs.setString(_keyPrefix + username, json);
   }
 
+  @override
   Future<void> clearCart(String username) async {
     if (username.isEmpty) return;
     await _prefs.remove(_keyPrefix + username);

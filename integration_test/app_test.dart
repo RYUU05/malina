@@ -16,8 +16,8 @@ void main() {
       app.main();
       await tester.pumpAndSettle();
 
-      expect(find.text('Малина'), findsOneWidget);
       expect(find.text('Войти'), findsOneWidget);
+      expect(find.text('Почта'), findsOneWidget);
     });
   });
 }
